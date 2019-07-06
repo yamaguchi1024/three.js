@@ -156,14 +156,15 @@ if ( 'serviceWorker' in navigator ) {
 
 // HERE!!
 {
-  let geometry = new THREE.PlaneBufferGeometry(10, 10, 10, 10);
+  // 画像のアレ
+  let imagegeometry = new THREE.PlaneBufferGeometry(10, 14);
   let texture = new THREE.TextureLoader().load( './images/image.jpg' );
-  let material = new THREE.MeshBasicMaterial( { map: texture } );
-  let mesh = new THREE.Mesh( geometry, material );
-  mesh.name = 'Plane';
-  mesh.position.set(0, 5, 0);
+  let imagematerial = new THREE.MeshBasicMaterial( { map: texture } );
+  let image = new THREE.Mesh( imagegeometry, imagematerial );
+  image.name = "画像";
+  image.position.set(0, 7, 0);
 
-  editor.scene.add(mesh);
+  editor.scene.add(image);
 
   // For legs
   var legsegmentCount = 2;
