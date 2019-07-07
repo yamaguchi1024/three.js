@@ -157,14 +157,19 @@ if ( 'serviceWorker' in navigator ) {
 // HERE!!
 {
   // 画像のアレ
-  let imagegeometry = new THREE.PlaneBufferGeometry(10, 14);
-  let texture = new THREE.TextureLoader().load( './images/image.jpg' );
-  let imagematerial = new THREE.MeshBasicMaterial( { map: texture } );
-  let image = new THREE.Mesh( imagegeometry, imagematerial );
-  image.name = "画像";
-  image.position.set(0, 7, 0);
+  let loader = new THREE.TextureLoader();
+  let iw, ih;
+  let texture = loader.load( './images/image.jpg', function(tex) {
+    iw = tex.image.width/40;
+    ih = tex.image.height/40;
+    let imagegeometry = new THREE.PlaneBufferGeometry(iw, ih);
+    let imagematerial = new THREE.MeshBasicMaterial( { map: texture } );
+    let image = new THREE.Mesh( imagegeometry, imagematerial );
+    image.name = "画像";
+    image.position.set(0, ih/2, 0);
 
-  editor.scene.add(image);
+    editor.scene.add(image);
+  });
 
   // For legs
   var legsegmentCount = 2;
