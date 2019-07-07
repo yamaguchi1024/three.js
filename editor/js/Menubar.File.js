@@ -60,7 +60,7 @@ Menubar.File = function ( editor ) {
 	fileInput.type = 'file';
 	fileInput.addEventListener( 'change', function ( event ) {
 
-		editor.loader.loadFiles( fileInput.files );
+    changeImage(fileInput.files);
 		form.reset();
 
 	} );

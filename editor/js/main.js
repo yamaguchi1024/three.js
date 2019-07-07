@@ -154,22 +154,40 @@ if ( 'serviceWorker' in navigator ) {
 
 }
 
-// HERE!!
-{
+function changeImage(files) {
+  editor.scene.remove(image);
+  Array.from(files).forEach(file => {
+    let reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function() {
+      let result = reader.result;
+      loadTexture(result);
+    }
+  });
+}
+
+let image;
+function loadTexture(imname) {
   // 画像のアレ
   let loader = new THREE.TextureLoader();
   let iw, ih;
-  let texture = loader.load( './images/image.jpg', function(tex) {
-    iw = tex.image.width/40;
-    ih = tex.image.height/40;
+  let texture = loader.load(imname, function(tex) {
+    iw = tex.image.width/50;
+    ih = tex.image.height/50;
     let imagegeometry = new THREE.PlaneBufferGeometry(iw, ih);
     let imagematerial = new THREE.MeshBasicMaterial( { map: texture } );
-    let image = new THREE.Mesh( imagegeometry, imagematerial );
+    image = new THREE.Mesh( imagegeometry, imagematerial );
     image.name = "画像";
     image.position.set(0, ih/2, 0);
 
     editor.scene.add(image);
   });
+}
+
+// HERE!!
+{
+  // Init image or not?
+  //loadTexture("./images/image.jpg");
 
   // For legs
   var legsegmentCount = 2;
