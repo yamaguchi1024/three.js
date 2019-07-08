@@ -177,11 +177,12 @@ function changeImage(files) {
 }
 
 let image;
+let resolution = 50;
+let texture;
 function loadTexture() {
   // 画像のアレ
-  let resolution = 50;
   let loader = new THREE.TextureLoader();
-  let texture = new THREE.Texture(textureCanvas);
+  texture = new THREE.Texture(textureCanvas);
   texture.needsUpdate = true;
   let imagegeometry = new THREE.PlaneBufferGeometry(textureCanvas.width/resolution, textureCanvas.height/resolution);
   let imagematerial = new THREE.MeshBasicMaterial( { map: texture } );
@@ -192,9 +193,48 @@ function loadTexture() {
   editor.scene.add(image);
 }
 
+let meshes = [];
 function downloadTexture() {
+  // Project to plane
+  let image_data = textureContext.getImageData(0, 0, textureCanvas.width, textureCanvas.height);
+  let planewidth = textureCanvas.width/resolution;
+  let planeheight = textureCanvas.height/resolution;
+
+  for (mesh of meshes) {
+    let geo = new THREE.Geometry().fromBufferGeometry(mesh.geometry);
+    mesh.updateMatrixWorld();
+    for (let i = 0; i < geo.vertices.length; i++) {
+      let ver = geo.vertices[i];
+      let vec = ver.clone();
+      vec.applyMatrix4(mesh.matrixWorld);
+      let x = (vec.x + planewidth/2)/planewidth;
+      let y = ((planeheight - vec.y)/planeheight);
+      let px = Math.floor(x*textureCanvas.width);
+      let py = Math.floor(y*textureCanvas.height);
+
+      if (i == 0) {
+        textureContext.moveTo(px, py);
+        continue;
+      }
+      textureContext.lineTo(px, py);
+      textureContext.stroke();
+      textureContext.moveTo(px, py);
+
+      //const index = (px + py * textureCanvas.width)*4;
+      //drawPixel(image_data, index, 255, 0, 0, 255);
+    }
+  }
+
+  //textureContext.putImageData(image_data, 0, 0);
   let url = textureCanvas.toDataURL();
   window.open(url);
+}
+
+function drawPixel (image_data, index, r, g, b, a) {
+  image_data.data[index + 0] = r;
+  image_data.data[index + 1] = g;
+  image_data.data[index + 2] = b;
+  image_data.data[index + 3] = a;
 }
 
 let textureCanvas, textureContext;
@@ -267,22 +307,19 @@ let textureCanvas, textureContext;
   head.position.set(0, 5.0, 0);
   head.name = "頭";
 
+  meshes.push(leftleg);
+  meshes.push(rightleg);
+  meshes.push(torso);
+  meshes.push(leftarm);
+  meshes.push(rightarm);
+  meshes.push(head);
+
   const wrap = new THREE.Object3D();
   wrap.name = "人体";
-  wrap.add(leftleg);
-  wrap.add(rightleg);
-  wrap.add(torso);
-  wrap.add(leftarm);
-  wrap.add(rightarm);
-  wrap.add(head);
-  editor.addObject(wrap);
-
-  // Project to plane
-  let headgeo2 = new THREE.Geometry().fromBufferGeometry(headgeometry);
-  for (let i = 0; i < headgeo2.vertices.length; i++) {
-    let ver = headgeo2.vertices[i];
-    //console.log(ver);
+  for (mesh of meshes) {
+    wrap.add(mesh);
   }
+  editor.addObject(wrap);
 }
 
 function createGeometry(sizing, geomname) {
