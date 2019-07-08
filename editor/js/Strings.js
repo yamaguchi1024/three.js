@@ -35,6 +35,7 @@ var Strings = function ( config ) {
 			'menubar/edit/fixcolormaps': 'Fix Color Maps',
 
 			'menubar/add': 'Add',
+			'menubar/add/skeleton': 'Skeleton',
 			'menubar/add/group': 'Group',
 			'menubar/add/plane': 'Plane',
 			'menubar/add/box': 'Box',

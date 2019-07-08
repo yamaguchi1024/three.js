@@ -18,6 +18,15 @@ Menubar.Add = function ( editor ) {
 	options.setClass( 'options' );
 	container.add( options );
 
+  // Skeleton
+	var option = new UI.Row();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/add/skeleton' ) );
+	option.onClick( function () {
+    addSkeleton();
+	} );
+	options.add( option );
+
 	// Group
 
 	var option = new UI.Row();

@@ -200,6 +200,11 @@ function downloadTexture() {
   let planewidth = textureCanvas.width/resolution;
   let planeheight = textureCanvas.height/resolution;
 
+  let curCanvas = document.createElement('canvas');
+  let curContext = curCanvas.getContext('2d');
+  curCanvas.height = textureCanvas.height; curCanvas.width = textureCanvas.width;
+  curContext.drawImage(textureCanvas, 0, 0);
+
   for (mesh of meshes) {
     let geo = new THREE.Geometry().fromBufferGeometry(mesh.geometry);
     mesh.updateMatrixWorld();
@@ -209,24 +214,24 @@ function downloadTexture() {
       vec.applyMatrix4(mesh.matrixWorld);
       let x = (vec.x + planewidth/2)/planewidth;
       let y = ((planeheight - vec.y)/planeheight);
-      let px = Math.floor(x*textureCanvas.width);
-      let py = Math.floor(y*textureCanvas.height);
+      let px = Math.floor(x*curCanvas.width);
+      let py = Math.floor(y*curCanvas.height);
 
       if (i == 0) {
-        textureContext.moveTo(px, py);
+        curContext.moveTo(px, py);
         continue;
       }
-      textureContext.lineTo(px, py);
-      textureContext.stroke();
-      textureContext.moveTo(px, py);
+      curContext.lineTo(px, py);
+      curContext.stroke();
+      curContext.moveTo(px, py);
 
-      //const index = (px + py * textureCanvas.width)*4;
+      //const index = (px + py * curCanvas.width)*4;
       //drawPixel(image_data, index, 255, 0, 0, 255);
     }
   }
 
-  //textureContext.putImageData(image_data, 0, 0);
-  let url = textureCanvas.toDataURL();
+  //curContext.putImageData(image_data, 0, 0);
+  let url = curCanvas.toDataURL();
   window.open(url);
 }
 
@@ -237,14 +242,7 @@ function drawPixel (image_data, index, r, g, b, a) {
   image_data.data[index + 3] = a;
 }
 
-let textureCanvas, textureContext;
-// HERE!!
-{
-  textureCanvas = document.createElement( "canvas" );
-  textureContext = textureCanvas.getContext( "2d" );
-  // Init image or not?
-  //loadTexture("./images/image.jpg");
-
+function addSkeleton () {
   // For legs
   var legsegmentCount = 2;
   var legheight = 2;
@@ -320,6 +318,13 @@ let textureCanvas, textureContext;
     wrap.add(mesh);
   }
   editor.addObject(wrap);
+}
+
+let textureCanvas, textureContext;
+// HERE!!
+{
+  textureCanvas = document.createElement( "canvas" );
+  textureContext = textureCanvas.getContext( "2d" );
 }
 
 function createGeometry(sizing, geomname) {
