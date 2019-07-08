@@ -80,6 +80,15 @@ Menubar.File = function ( editor ) {
 
 	options.add( new UI.HorizontalRule() );
 
+  // Export Canvas
+	var option = new UI.Row();
+	option.setClass( 'option' );
+	option.setTextContent( strings.getKey( 'menubar/file/export/image' ) );
+	option.onClick( function () {
+    downloadTexture();
+  });
+	options.add( option );
+
 	// Export Geometry
 
 	var option = new UI.Row();

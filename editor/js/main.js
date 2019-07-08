@@ -161,31 +161,47 @@ function changeImage(files) {
     reader.readAsDataURL(file);
     reader.onload = function() {
       let result = reader.result;
-      loadTexture(result);
+      let image = new Image();
+
+      image.crossOrigin = "anonymous";
+      image.onload = function() {
+        textureCanvas.width = image.width;
+        textureCanvas.height = image.height;
+
+        textureCanvas.getContext("2d").drawImage(image, 0, 0, image.width, image.height, 0, 0, textureCanvas.width, textureCanvas.height);
+        loadTexture();
+      }
+      image.src = result;
     }
   });
 }
 
 let image;
-function loadTexture(imname) {
+function loadTexture() {
   // 画像のアレ
+  let resolution = 50;
   let loader = new THREE.TextureLoader();
-  let iw, ih;
-  let texture = loader.load(imname, function(tex) {
-    iw = tex.image.width/50;
-    ih = tex.image.height/50;
-    let imagegeometry = new THREE.PlaneBufferGeometry(iw, ih);
-    let imagematerial = new THREE.MeshBasicMaterial( { map: texture } );
-    image = new THREE.Mesh( imagegeometry, imagematerial );
-    image.name = "画像";
-    image.position.set(0, ih/2, 0);
+  let texture = new THREE.Texture(textureCanvas);
+  texture.needsUpdate = true;
+  let imagegeometry = new THREE.PlaneBufferGeometry(textureCanvas.width/resolution, textureCanvas.height/resolution);
+  let imagematerial = new THREE.MeshBasicMaterial( { map: texture } );
+  image = new THREE.Mesh( imagegeometry, imagematerial );
+  image.name = "画像";
+  image.position.set(0, textureCanvas.height/resolution/2, 0);
 
-    editor.scene.add(image);
-  });
+  editor.scene.add(image);
 }
 
+function downloadTexture() {
+  let url = textureCanvas.toDataURL();
+  window.open(url);
+}
+
+let textureCanvas, textureContext;
 // HERE!!
 {
+  textureCanvas = document.createElement( "canvas" );
+  textureContext = textureCanvas.getContext( "2d" );
   // Init image or not?
   //loadTexture("./images/image.jpg");
 
@@ -260,6 +276,13 @@ function loadTexture(imname) {
   wrap.add(rightarm);
   wrap.add(head);
   editor.addObject(wrap);
+
+  // Project to plane
+  let headgeo2 = new THREE.Geometry().fromBufferGeometry(headgeometry);
+  for (let i = 0; i < headgeo2.vertices.length; i++) {
+    let ver = headgeo2.vertices[i];
+    //console.log(ver);
+  }
 }
 
 function createGeometry(sizing, geomname) {
