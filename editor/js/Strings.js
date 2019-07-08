@@ -12,7 +12,7 @@ var Strings = function ( config ) {
 
 			'menubar/file': 'File',
 			'menubar/file/new': 'New',
-			'menubar/file/import': 'Import',
+			'menubar/file/import': 'Import Image',
 			'menubar/file/export/image': 'Export Image',
 			'menubar/file/export/geometry': 'Export Geometry',
 			'menubar/file/export/object': 'Export Object',
